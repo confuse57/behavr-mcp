@@ -1,0 +1,30 @@
+{
+  "name": "behavr-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for BEHAVR: remember images/videos and ask questions about them",
+  "type": "module",
+  "bin": {
+    "behavr-mcp": "dist/src/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "tsc -p tsconfig.json && node --test dist/test/wait.test.js dist/test/remember.test.js",
+    "e2e": "tsc -p tsconfig.json && node dist/scripts/e2e.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "behavr-sdk": "0.3.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.10",
+    "typescript": "5.5.4"
+  }
+}
