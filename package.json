@@ -1,6 +1,7 @@
 {
   "name": "behavr-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "mcpName": "io.github.confuse57/behavr-mcp",
   "description": "MCP server for BEHAVR: remember images/videos and ask questions about them",
   "repository": {
     "type": "git",
