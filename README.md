@@ -12,15 +12,84 @@ It runs locally over stdio. There is no hosted or HTTP mode.
 - Node.js 18 or newer
 - A BEHAVR API key
 
-## Install and build
+## Install
+
+Optional variables (BEHAVR_CLIENT_ID, BEHAVR_AGENT_ID) are described under Configuration.
+
+### Claude Code
 
 ```sh
-git clone <this repo>
+claude mcp add behavr -e BEHAVR_API_KEY=your-key -- npx -y behavr-mcp
+```
+
+On Windows (PowerShell):
+
+```powershell
+claude mcp add behavr -e BEHAVR_API_KEY=your-key '--' npx -y behavr-mcp
+```
+
+In PowerShell, write the separator as '--' (in quotes), otherwise PowerShell drops it and the command fails with 'missing required argument commandOrUrl'.
+
+Add `-s user` to make it available in every project. To share the setup with a team, use a project-level `.mcp.json` instead. Keep the key out of the file: Claude Code expands `${VAR}` from your environment.
+
+```json
+{
+  "mcpServers": {
+    "behavr": {
+      "command": "npx",
+      "args": ["-y", "behavr-mcp"],
+      "env": {
+        "BEHAVR_API_KEY": "${BEHAVR_API_KEY}",
+        "BEHAVR_CLIENT_ID": "my-client"
+      }
+    }
+  }
+}
+```
+
+### Cursor
+
+Add this to `~/.cursor/mcp.json` (all projects) or `.cursor/mcp.json` (one project). Do not commit a file that contains your key.
+
+Cursor config is untested.
+
+```json
+{
+  "mcpServers": {
+    "behavr": {
+      "command": "npx",
+      "args": ["-y", "behavr-mcp"],
+      "env": {
+        "BEHAVR_API_KEY": "your-key"
+      }
+    }
+  }
+}
+```
+
+### Alternative: build from source
+
+```sh
+git clone https://github.com/confuse57/behavr-mcp.git
 cd behavr-mcp
 npm install && npm run build
 ```
 
-The server entry point is `dist/src/index.js` (not `dist/index.js`).
+The server entry point is `dist/src/index.js` (not `dist/index.js`). Run it with `node` instead of `npx -y behavr-mcp`:
+
+```sh
+claude mcp add behavr -e BEHAVR_API_KEY=your-key -- node /absolute/path/to/behavr-mcp/dist/src/index.js
+```
+
+```powershell
+claude mcp add behavr -e BEHAVR_API_KEY=your-key '--' node C:\path\to\behavr-mcp\dist\src\index.js
+```
+
+In `.mcp.json` or Cursor's `mcp.json`, use `"command": "node"` and `"args": ["C:\\path\\to\\behavr-mcp\\dist\\src\\index.js"]`.
+
+#### Windows paths in JSON
+
+A backslash must be written twice inside a JSON string: `"C:\\Users\\me\\behavr-mcp\\dist\\src\\index.js"`. Forward slashes also work: `"C:/Users/me/behavr-mcp/dist/src/index.js"`. A single backslash (`"C:\Users\..."`) is invalid JSON or silently turns into a different character.
 
 ## Configuration
 
@@ -39,60 +108,6 @@ The server prints only the client and agent ids to stderr at startup. The API ke
 - `claude mcp add -e BEHAVR_API_KEY=...` stores the key in plain text in Claude Code's config file, and the command can also end up in your shell history. Use a key dedicated to this server, and run `claude mcp remove behavr` when you no longer need it.
 - Never put a real key in a shared project's `.mcp.json`. Use `"${BEHAVR_API_KEY}"` instead.
 - In Cursor, put your key in `mcp.json` and do not commit that file to git.
-
-## Claude Code
-
-```sh
-claude mcp add behavr -e BEHAVR_API_KEY=your-key -e BEHAVR_CLIENT_ID=my-client -- node /absolute/path/to/behavr-mcp/dist/src/index.js
-```
-
-On Windows (PowerShell):
-
-```powershell
-claude mcp add behavr -e BEHAVR_API_KEY=your-key -e BEHAVR_CLIENT_ID=my-client '--' node C:\path\to\behavr-mcp\dist\src\index.js
-```
-
-In PowerShell, write the separator as '--' (in quotes), otherwise PowerShell drops it and the command fails with 'missing required argument commandOrUrl'.
-
-Add `-s user` to make it available in every project. To share the setup with a team, use a project-level `.mcp.json` instead. Keep the key out of the file: Claude Code expands `${VAR}` from your environment.
-
-```json
-{
-  "mcpServers": {
-    "behavr": {
-      "command": "node",
-      "args": ["C:\\path\\to\\behavr-mcp\\dist\\src\\index.js"],
-      "env": {
-        "BEHAVR_API_KEY": "${BEHAVR_API_KEY}",
-        "BEHAVR_CLIENT_ID": "my-client"
-      }
-    }
-  }
-}
-```
-
-## Cursor
-
-Add this to `~/.cursor/mcp.json` (all projects) or `.cursor/mcp.json` (one project). Do not commit a file that contains your key.
-
-```json
-{
-  "mcpServers": {
-    "behavr": {
-      "command": "node",
-      "args": ["C:\\path\\to\\behavr-mcp\\dist\\src\\index.js"],
-      "env": {
-        "BEHAVR_API_KEY": "your-key",
-        "BEHAVR_CLIENT_ID": "my-client"
-      }
-    }
-  }
-}
-```
-
-### Windows paths in JSON
-
-A backslash must be written twice inside a JSON string: `"C:\\Users\\me\\behavr-mcp\\dist\\src\\index.js"`. Forward slashes also work: `"C:/Users/me/behavr-mcp/dist/src/index.js"`. A single backslash (`"C:\Users\..."`) is invalid JSON or silently turns into a different character.
 
 ## Tools
 
@@ -115,14 +130,12 @@ The answer is generated from your stored images and can repeat text found inside
 
 ## What leaves your machine
 
-- **The file you remember.** It is uploaded to BEHAVR's servers and processed by AI. BEHAVR's sub-processors for this are Anthropic and Google Firebase.
-- **What is kept.** The original file is deleted after processing. BEHAVR keeps the generated description, the extracted text and a small thumbnail until you delete them.
+- **The file you remember.** It is uploaded to BEHAVR's servers and processed by AI. BEHAVR's sub-processors are Anthropic (reads images, writes answers), OpenAI (turns generated text and your questions into search embeddings), and the backend is hosted on Railway with data stored in Google Firebase.
+- **What is kept.** The original file is deleted once processing completes. BEHAVR keeps the generated description, the extracted text and, where available, a small thumbnail until you delete them.
 - **Ids and questions.** Your client id and agent id are sent with each upload, and the questions you send to `ask` are sent to BEHAVR.
 - **BEHAVR does not sell your data.**
 
 Questions about your data: support@behavr.in.
-
-> Note for maintainers: check this section's wording against the live privacy page at https://behavr.in before each release.
 
 ## Troubleshooting
 

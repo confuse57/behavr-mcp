@@ -2,12 +2,25 @@
   "name": "behavr-mcp",
   "version": "0.1.0",
   "description": "MCP server for BEHAVR: remember images/videos and ask questions about them",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/confuse57/behavr-mcp.git"
+  },
+  "homepage": "https://behavr.in",
+  "keywords": [
+    "mcp",
+    "memory",
+    "vision",
+    "images",
+    "ai-agents"
+  ],
+  "author": "Tagbudy Services Pvt. Ltd. (https://behavr.in)",
   "type": "module",
   "bin": {
     "behavr-mcp": "dist/src/index.js"
   },
   "files": [
-    "dist"
+    "dist/src"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
