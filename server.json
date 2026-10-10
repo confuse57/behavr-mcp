@@ -1,0 +1,41 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.confuse57/behavr-mcp",
+  "description": "MCP server for BEHAVR: remember images/videos and ask questions about them",
+  "repository": {
+    "url": "https://github.com/confuse57/behavr-mcp",
+    "source": "github"
+  },
+  "version": "0.1.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "behavr-mcp",
+      "version": "0.1.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Your BEHAVR API key",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true,
+          "name": "BEHAVR_API_KEY"
+        },
+        {
+          "description": "Optional client id that groups memories",
+          "isRequired": false,
+          "format": "string",
+          "name": "BEHAVR_CLIENT_ID"
+        },
+        {
+          "description": "Optional agent id within the client",
+          "isRequired": false,
+          "format": "string",
+          "name": "BEHAVR_AGENT_ID"
+        }
+      ]
+    }
+  ]
+}
