@@ -1,5 +1,10 @@
 # behavr-mcp
 
+
+https://github.com/user-attachments/assets/fd5319d4-acf7-4484-953d-8ceed0448dcf
+
+
+
 An MCP server for [BEHAVR](https://behavr.in). It gives an AI assistant two tools:
 
 - **remember**: upload a local image or video to BEHAVR so it can be recalled later.
