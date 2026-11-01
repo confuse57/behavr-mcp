@@ -10,7 +10,7 @@ An MCP server for [BEHAVR](https://behavr.in). It gives an AI assistant two tool
 - **remember**: upload a local image or video to BEHAVR so it can be recalled later.
 - **ask**: ask a question about everything remembered so far.
 
-It runs locally over stdio. There is no hosted or HTTP mode.
+It runs locally over stdio. There is no hosted or HTTP mode, so it does not work in hosted tools such as Lovable or Replit; it needs a local MCP client like Claude Code or Cursor.
 
 ## Requirements
 
@@ -136,7 +136,7 @@ The answer is generated from your stored images and can repeat text found inside
 ## What leaves your machine
 
 - **The file you remember.** It is uploaded to BEHAVR's servers and processed by AI. BEHAVR's sub-processors are Anthropic (reads images, writes answers), OpenAI (turns generated text and your questions into search embeddings), and the backend is hosted on Railway with data stored in Google Firebase.
-- **What is kept.** The original file is deleted once processing completes. BEHAVR keeps the generated description, the extracted text and, where available, a small thumbnail until you delete them.
+- **What is kept.** The original file is deleted once processing completes. BEHAVR keeps the generated description, the extracted text and, where available, a small thumbnail. There is currently no delete endpoint. To request deletion of your data, email support@behavr.in.
 - **Ids and questions.** Your client id and agent id are sent with each upload, and the questions you send to `ask` are sent to BEHAVR.
 - **BEHAVR does not sell your data.**
 
@@ -145,6 +145,8 @@ Questions about your data: support@behavr.in.
 ## Troubleshooting
 
 - **The server shows as "failed" in Claude Code or Cursor.** Check `BEHAVR_API_KEY` first. If it is not set, the server does not start and writes `BEHAVR_API_KEY is not set` to stderr.
+- **Error 401.** The API key is missing or invalid.
+- **Error 403.** Your key is fine, but your plan limit has been reached (monthly image or video limit) or your subscription has expired. Don't regenerate the key; check your plan.
 - **`remember` times out.** Processing may still be running. Don't upload the file again right away; call `ask` about it after a minute.
 - **"Only image/video files can be remembered".** Only `jpg`, `jpeg`, `png`, `heic`, `webp`, `mp4`, `mov`, `avi`, `mkv` and `webm` files are accepted. The path must also be absolute; a relative path is rejected with "file_path must be an absolute path".
 - **Video uploads fail.** Video requires a paid BEHAVR plan.
@@ -152,7 +154,7 @@ Questions about your data: support@behavr.in.
 ## Known limits
 
 - The allowlist checks the file extension only, not the file content.
-- The end-to-end script uploads one image per run, and BEHAVR has no delete call in this SDK, so that memory stays under its `mcp-e2e-<timestamp>` client.
+- The end-to-end script uploads one image per run, and there is currently no delete endpoint, so that memory stays under its `mcp-e2e-<timestamp>` client.
 
 ## Development
 
