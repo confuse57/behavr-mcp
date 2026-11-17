@@ -4,7 +4,8 @@ import { fileURLToPath } from "node:url";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { redact } from "../src/errors.js";
+import { BehavrClient } from "behavr-sdk";
+import { formatError, redact } from "../src/errors.js";
 
 // Live end-to-end check against the real BEHAVR backend. All output goes to stderr.
 // The key comes only from BEHAVR_E2E_API_KEY; BEHAVR_API_KEY and .env are never read.
@@ -80,8 +81,32 @@ async function startServer(agentId: string): Promise<Client> {
   return client;
 }
 
+// deleteMemory() exists from behavr-sdk 0.4.0. Typed as optional so this
+// script still compiles against 0.3.x, where cleanup is skipped.
+type MaybeDeleter = { deleteMemory?: (memoryId: string) => Promise<{ deleted: boolean }> };
+
+// Deletes the memory this run uploaded. Runs even if earlier checks failed.
+async function cleanup(memoryId: string | undefined): Promise<void> {
+  if (!memoryId) {
+    log("SKIP cleanup: no memoryId was returned, nothing to delete");
+    return;
+  }
+  const sdk = new BehavrClient({ apiKey }) as unknown as MaybeDeleter;
+  if (typeof sdk.deleteMemory !== "function") {
+    log(`SKIP cleanup: installed behavr-sdk has no deleteMemory(); memory ${memoryId} stays under ${clientId}`);
+    return;
+  }
+  try {
+    const res = await sdk.deleteMemory(memoryId);
+    check(res.deleted === true, "cleanup: deleteMemory removes the uploaded memory", JSON.stringify(res));
+  } catch (err) {
+    check(false, "cleanup: deleteMemory removes the uploaded memory", `${formatError(err, apiKey)} (memory ${memoryId})`);
+  }
+}
+
 async function main(): Promise<void> {
   log(`client_id: ${clientId}`);
+  let memoryId: string | undefined;
   const a = await startServer("e2e-agent-a");
   const b = await startServer("e2e-agent-b");
   try {
@@ -107,7 +132,7 @@ async function main(): Promise<void> {
     log(`progress notifications: ${progressCount}`);
     check(!remembered.isError && rememberedText.includes("status: completed"), "remember completes on agent a");
 
-    const memoryId = /^memoryId: (.+)$/m.exec(rememberedText)?.[1]?.trim();
+    memoryId = /^memoryId: (.+)$/m.exec(rememberedText)?.[1]?.trim();
     check(Boolean(memoryId), "remember result includes a memoryId", rememberedText);
 
     const asked = (await b.callTool(
@@ -128,6 +153,7 @@ async function main(): Promise<void> {
   } finally {
     await a.close();
     await b.close();
+    await cleanup(memoryId);
   }
 
   check(!serverStderr.includes(apiKey), "API key never appears in server stderr");

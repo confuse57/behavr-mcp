@@ -155,7 +155,7 @@ Questions about your data: support@behavr.in.
 ## Known limits
 
 - The allowlist checks the file extension only, not the file content.
-- The end-to-end script uploads one image per run, and that memory stays under its `mcp-e2e-<timestamp>` client.
+- The end-to-end script uploads one image per run and deletes it at the end with `deleteMemory()` (needs `behavr-sdk` 0.4.0 or later; with an older SDK it skips this). If that delete fails, for example because the memory is still processing, the memory stays under its `mcp-e2e-<timestamp>` client and the script reports a FAIL with its id.
 
 ## Development
 
