@@ -28,7 +28,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "tsc -p tsconfig.json && node --test dist/test/wait.test.js dist/test/remember.test.js",
+    "test": "tsc -p tsconfig.json && node --test dist/test/wait.test.js dist/test/remember.test.js dist/test/ask.test.js",
     "e2e": "tsc -p tsconfig.json && node dist/scripts/e2e.js"
   },
   "engines": {

@@ -50,7 +50,8 @@ function textOf(result: CallToolResult): string {
   return text;
 }
 
-// Splits ask's output ("answer\n\nSources:\n- a\n- b") into its parts.
+// Splits ask's output ("answer\n\nSources:\n- Title (a)\n- b") into its parts;
+// each source line is "- <id>" or "- <title> (<id>)".
 function parseAsk(text: string): { answer: string; sources: string[] } {
   const marker = "\n\nSources:\n";
   const at = text.indexOf(marker);
@@ -59,7 +60,8 @@ function parseAsk(text: string): { answer: string; sources: string[] } {
     .slice(at + marker.length)
     .split("\n")
     .map((line) => line.replace(/^- /, "").trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .map((line) => /\(([^()\s]+)\)$/.exec(line)?.[1] ?? line);
   return { answer: text.slice(0, at).trim(), sources };
 }
 
