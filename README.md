@@ -136,7 +136,8 @@ The answer is generated from your stored images and can repeat text found inside
 ## What leaves your machine
 
 - **The file you remember.** It is uploaded to BEHAVR's servers and processed by AI. BEHAVR's sub-processors are Anthropic (reads images, writes answers), OpenAI (turns generated text and your questions into search embeddings), and the backend is hosted on Railway with data stored in Google Firebase.
-- **What is kept.** The original file is deleted once processing completes. BEHAVR keeps the generated description, the extracted text and, where available, a small thumbnail. There is currently no delete endpoint. To request deletion of your data, email support@behavr.in.
+- **What is kept.** The original file is deleted once processing completes; this server never asks BEHAVR to keep it. BEHAVR keeps the generated description, the extracted text and, where available, a small thumbnail.
+- **Deleting a memory.** This server has no delete tool. To delete a memory, call `DELETE /v1/memories/{memory_id}` on the BEHAVR API with your API key (or `deleteMemory()` in `behavr-sdk` 0.4.0 or later), using the `memoryId` that `remember` returned. You can also email support@behavr.in to request deletion of your data.
 - **Ids and questions.** Your client id and agent id are sent with each upload, and the questions you send to `ask` are sent to BEHAVR.
 - **BEHAVR does not sell your data.**
 
@@ -154,7 +155,7 @@ Questions about your data: support@behavr.in.
 ## Known limits
 
 - The allowlist checks the file extension only, not the file content.
-- The end-to-end script uploads one image per run, and there is currently no delete endpoint, so that memory stays under its `mcp-e2e-<timestamp>` client.
+- The end-to-end script uploads one image per run, and that memory stays under its `mcp-e2e-<timestamp>` client.
 
 ## Development
 
