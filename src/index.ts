@@ -17,7 +17,7 @@ async function main(): Promise<void> {
   }
 
   const client = new BehavrClient({ apiKey: config.apiKey });
-  const server = new McpServer({ name: "behavr-mcp", version: "0.1.0" });
+  const server = new McpServer({ name: "behavr-mcp", version: "0.2.0" });
 
   server.registerTool(
     "remember",

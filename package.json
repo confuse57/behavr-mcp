@@ -28,7 +28,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "tsc -p tsconfig.json && node --test dist/test/wait.test.js dist/test/remember.test.js dist/test/ask.test.js",
+    "test": "tsc -p tsconfig.json && node --test dist/test/wait.test.js dist/test/remember.test.js dist/test/ask.test.js dist/test/version.test.js",
     "e2e": "tsc -p tsconfig.json && node dist/scripts/e2e.js"
   },
   "engines": {
@@ -38,7 +38,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.32.1",
     "behavr-sdk": "0.4.0",
-    "zod": "4.6.6"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/node": "20.14.10",
